@@ -5,28 +5,39 @@ import { supabaseBrowser } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("chrislogz0@gmail.com");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [code, setCode] = useState("");
+  const [step, setStep] = useState<"email" | "code">("email");
+  const [status, setStatus] = useState<"idle" | "loading">("idle");
   const [error, setError] = useState<string | null>(null);
 
-  async function send() {
-    setStatus("sending");
+  async function sendCode() {
+    setStatus("loading");
     setError(null);
     const supabase = supabaseBrowser();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo:
-          typeof window !== "undefined"
-            ? `${window.location.origin}/auth/callback`
-            : undefined,
-      },
-    });
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    setStatus("idle");
     if (error) {
-      setStatus("error");
       setError(error.message);
     } else {
-      setStatus("sent");
+      setStep("code");
     }
+  }
+
+  async function verify() {
+    setStatus("loading");
+    setError(null);
+    const supabase = supabaseBrowser();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: code.trim(),
+      type: "email",
+    });
+    if (error) {
+      setStatus("idle");
+      setError(error.message);
+      return;
+    }
+    window.location.href = "/";
   }
 
   return (
@@ -38,17 +49,12 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold mt-1">Entrar</h1>
       </header>
 
-      {status === "sent" ? (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5">
-          <p className="font-semibold text-emerald-300">Mira el correo</p>
-          <p className="text-sm text-stone-300 mt-1">
-            Te he enviado un enlace mágico a {email}. Ábrelo desde el iPhone.
-          </p>
-        </div>
-      ) : (
+      {step === "email" ? (
         <div className="space-y-3">
           <input
             type="email"
+            inputMode="email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="email"
@@ -56,11 +62,48 @@ export default function LoginPage() {
           />
           <button
             type="button"
-            onClick={send}
-            disabled={status === "sending" || !email}
+            onClick={sendCode}
+            disabled={status === "loading" || !email}
             className="w-full py-4 rounded-xl bg-stone-100 text-stone-950 font-bold disabled:opacity-50"
           >
-            {status === "sending" ? "Enviando..." : "Mándame un enlace"}
+            {status === "loading" ? "Enviando..." : "Mándame un código"}
+          </button>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-sm text-stone-300">
+            Te mandé un código de 6 dígitos a {email}. Míralo en el correo y
+            escríbelo aquí.
+          </p>
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+            placeholder="------"
+            maxLength={6}
+            className="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-4 text-2xl tracking-[0.5em] text-center focus:outline-none focus:border-stone-500"
+          />
+          <button
+            type="button"
+            onClick={verify}
+            disabled={status === "loading" || code.length < 6}
+            className="w-full py-4 rounded-xl bg-stone-100 text-stone-950 font-bold disabled:opacity-50"
+          >
+            {status === "loading" ? "Comprobando..." : "Entrar"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setStep("email");
+              setCode("");
+              setError(null);
+            }}
+            className="w-full py-2 text-sm text-stone-500"
+          >
+            Usar otro email
           </button>
           {error && <p className="text-sm text-red-400">{error}</p>}
         </div>
