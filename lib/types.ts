@@ -49,3 +49,24 @@ export interface Income {
 }
 
 export type NewIncome = Omit<Income, "id" | "user_id" | "created_at">;
+
+export type InvestmentKind = "accion_etf" | "fondo_pension";
+
+export interface Investment {
+  id: string;
+  user_id: string;
+  name: string;
+  kind: InvestmentKind;
+  invested: number;
+  current_value: number;
+  value_updated_at: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export type NewInvestment = Omit<Investment, "id" | "user_id" | "created_at">;
+
+export const INVESTMENT_KINDS: { id: InvestmentKind; label: string }[] = [
+  { id: "accion_etf", label: "Acciones / ETF" },
+  { id: "fondo_pension", label: "Fondo / pensiones" },
+];
