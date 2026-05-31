@@ -31,19 +31,27 @@ export async function GET(request: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const kind = new URL(request.url).searchParams.get("kind");
-  const payload = JSON.stringify(
-    kind === "capital"
-      ? {
-          title: "Actualiza tu capital",
-          body: "Es 1 de mes. Mete el valor actual de tus inversiones.",
-          url: "/inversiones",
-        }
-      : {
-          title: "Hora de apuntar los gastos",
-          body: "Antes de dormir, dile a la app dónde se ha ido el día.",
-          url: "/",
-        }
-  );
+  let payloadObj: { title: string; body: string; url: string };
+  if (kind === "capital") {
+    payloadObj = {
+      title: "Actualiza tu capital",
+      body: "Es 1 de mes. Mete el valor actual de tus inversiones.",
+      url: "/inversiones",
+    };
+  } else if (kind === "snapshot") {
+    payloadObj = {
+      title: "Snapshot mensual",
+      body: "Es 1 de mes. Apunta los saldos de tus cuentas en /sistema.",
+      url: "/sistema",
+    };
+  } else {
+    payloadObj = {
+      title: "Hora de apuntar los gastos",
+      body: "Antes de dormir, dile a la app dónde se ha ido el día.",
+      url: "/",
+    };
+  }
+  const payload = JSON.stringify(payloadObj);
 
   const results = await Promise.allSettled(
     (subs ?? []).map((s) =>

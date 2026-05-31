@@ -5,6 +5,10 @@
       "schedule": "0 20 * * *"
     },
     {
+      "path": "/api/notify?kind=snapshot",
+      "schedule": "0 8 1 * *"
+    },
+    {
       "path": "/api/notify?kind=capital",
       "schedule": "0 9 1 * *"
     }
