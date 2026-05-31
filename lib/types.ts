@@ -66,6 +66,41 @@ export interface Investment {
 
 export type NewInvestment = Omit<Investment, "id" | "user_id" | "created_at">;
 
+export interface MonthlySnapshot {
+  id: string;
+  user_id: string;
+  snapshot_month: string;
+  bbva_trabajo: number;
+  bbva_personal: number;
+  bbva_impuestos: number;
+  trade_republic: number;
+  myinvestor: number;
+  acciones: number;
+  revolut: number;
+  conjunta: number;
+  cash_b: number;
+  pendiente_cobrar_neto: number;
+  iva_pendiente: number;
+  irpf_pendiente: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type NewMonthlySnapshot = Omit<MonthlySnapshot, "id" | "user_id" | "created_at" | "updated_at">;
+
+export const SNAPSHOT_ACCOUNTS = [
+  { id: "bbva_trabajo", label: "BBVA Trabajo", hint: "Operativa, entran facturas A" },
+  { id: "bbva_personal", label: "BBVA Personal", hint: "Recibe sueldo, paga fijos" },
+  { id: "bbva_impuestos", label: "BBVA Impuestos", hint: "20-30% de cada cobro A" },
+  { id: "trade_republic", label: "Trade Republic", hint: "Colchón 3,04% TAE" },
+  { id: "myinvestor", label: "MyInvestor", hint: "Inversión largo plazo" },
+  { id: "acciones", label: "Acciones", hint: "Cartera de acciones" },
+  { id: "revolut", label: "Revolut", hint: "Gastos random online" },
+  { id: "conjunta", label: "Conjunta", hint: "Pareja, gastos compartidos" },
+  { id: "cash_b", label: "Cash B", hint: "Tope 4.000 €" },
+] as const;
+
 export const INVESTMENT_KINDS: { id: InvestmentKind; label: string }[] = [
   { id: "accion_etf", label: "Acciones / ETF" },
   { id: "fondo_pension", label: "Fondo / pensiones" },

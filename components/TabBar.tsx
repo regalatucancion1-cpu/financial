@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 const tabs = [
   { href: "/", label: "Apunta", icon: "＋" },
   { href: "/mes", label: "Mes", icon: "∑" },
-  { href: "/inversiones", label: "Inversiones", icon: "↗" },
+  { href: "/sistema", label: "Sistema", icon: "◆" },
+  { href: "/inversiones", label: "Inversión", icon: "↗" },
   { href: "/historial", label: "Historial", icon: "≡" },
   { href: "/ajustes", label: "Ajustes", icon: "•" },
 ];
@@ -16,7 +17,7 @@ export function TabBar() {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 border-t border-stone-800 bg-stone-950/95 backdrop-blur z-50">
-      <ul className="max-w-2xl mx-auto grid grid-cols-5">
+      <ul className="max-w-2xl mx-auto grid grid-cols-6">
         {tabs.map((tab) => {
           const active =
             tab.href === "/"
